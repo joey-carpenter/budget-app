@@ -4,32 +4,9 @@ import type { Metadata } from "next";
 import { Geist } from "next/font/google";
 
 import { TRPCReactProvider } from "~/trpc/react";
+import { ThemeProvider } from "~/components/theme-provider"
 
-import {
-	NavigationMenu,
-	NavigationMenuContent,
-	NavigationMenuIndicator,
-	NavigationMenuItem,
-	NavigationMenuLink,
-	NavigationMenuList,
-	NavigationMenuTrigger,
-	navigationMenuTriggerStyle,
-	NavigationMenuViewport,
-} from "~/components/ui/navigation-menu"
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "~/components/ui/dropdown-menu"
-import { Button } from "~/components/ui/button"
-import Link from "next/link";
-import Image from "next/image";
-import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar"
-
-import { UserRound } from "lucide-react";
+import Navbar from "~/components/Navbar";
 
 export const metadata: Metadata = {
 	title: "Create T3 App",
@@ -46,61 +23,17 @@ export default function RootLayout({
 	children,
 }: Readonly<{ children: React.ReactNode }>) {
 	return (
-		<html lang="en" className={`${geist.variable}`}>
+		<html lang="en" className={`${geist.variable}`} suppressHydrationWarning>
 			<body>
 				<TRPCReactProvider>
-					<nav className="flex items-center justify-between p-4">
-						{/* Left Side: Logo and Navigation Links */}
-						<div className="flex items-center space-x-4">
-							{/* Logo */}
-							<div className="font-bold">budget.</div>
-
-							{/* Navigation Menu */}
-							<NavigationMenu>
-								<NavigationMenuList>
-									<NavigationMenuItem>
-										<NavigationMenuLink asChild className={navigationMenuTriggerStyle()}>
-											<Link href="/dashboard">Dashboard</Link>
-										</NavigationMenuLink>
-									</NavigationMenuItem>
-									<NavigationMenuItem>
-										<NavigationMenuLink asChild className={navigationMenuTriggerStyle()}>
-											<Link href="/settings">Settings</Link>
-										</NavigationMenuLink>
-									</NavigationMenuItem>
-								</NavigationMenuList>
-							</NavigationMenu>
-						</div>
-
-						{/* Right Side: Profile Dropdown */}
-						<div className="flex items-center space-x-4">
-							{/* Placeholder Profile Picture */}
-							<DropdownMenu>
-								<DropdownMenuTrigger asChild>
-									{/* <Button variant="ghost" size="icon" className="p-0">
-										<UserRound
-											size={128}
-											className="rounded-full"
-										/>
-									</Button> */}
-									<Avatar>
-										<AvatarImage src="https://github.com/shadcn.png" />
-  										<AvatarFallback>
-											<UserRound
-												size={32}
-												className="rounded-full"
-											/>
-										</AvatarFallback>
-									</Avatar>
-								</DropdownMenuTrigger>
-								<DropdownMenuContent>
-									<DropdownMenuItem>Account Settings</DropdownMenuItem>
-									<DropdownMenuItem>Logout</DropdownMenuItem>
-								</DropdownMenuContent>
-							</DropdownMenu>
-						</div>
-					</nav>
-					{children}
+					<ThemeProvider
+						attribute="class"
+						defaultTheme="dark"
+						enableSystem
+					>
+						<Navbar />
+						{children}
+					</ThemeProvider>
 				</TRPCReactProvider>
 			</body>
 		</html>
