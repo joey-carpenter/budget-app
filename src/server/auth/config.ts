@@ -1,15 +1,8 @@
-import { DrizzleAdapter } from "@auth/drizzle-adapter";
+import { PrismaAdapter } from "@auth/prisma-adapter";
 import type { DefaultSession, NextAuthConfig } from "next-auth";
-import DiscordProvider from "next-auth/providers/discord";
 import Google from "next-auth/providers/google";
 
 import { db } from "~/server/db";
-import {
-	accounts,
-	sessions,
-	users,
-	verificationTokens,
-} from "~/server/db/schema";
 
 /**
  * Module augmentation for `next-auth` types. Allows us to add custom properties to the `session`
@@ -50,12 +43,7 @@ export const authConfig = {
 		 * @see https://next-auth.js.org/providers/github
 		 */
 	],
-	adapter: DrizzleAdapter(db, {
-		usersTable: users,
-		accountsTable: accounts,
-		sessionsTable: sessions,
-		verificationTokensTable: verificationTokens,
-	}),
+	adapter: PrismaAdapter(db),
 	callbacks: {
 		session: ({ session, user }) => ({
 			...session,

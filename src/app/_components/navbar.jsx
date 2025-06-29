@@ -34,7 +34,7 @@ function Navbar() {
             {/* Left Side: Logo and Navigation Links */}
             <div className="flex items-center space-x-4">
                 {/* Logo */}
-                <div className="font-bold">budget.</div>
+                <Link className="font-bold cursor-pointer" href="/">budget.</Link>
 
                 {/* Navigation Menu */}
                 <NavigationMenu>

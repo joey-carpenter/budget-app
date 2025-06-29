@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import { type QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { httpBatchStreamLink, loggerLink } from "@trpc/client";
@@ -12,10 +12,10 @@ import { createQueryClient } from "./query-client";
 
 let clientQueryClientSingleton: QueryClient | undefined = undefined;
 const getQueryClient = () => {
-	// if (typeof window === "undefined") {
-	// 	// Server: always make a new query client
-	// 	return createQueryClient();
-	// }
+	if (typeof window === "undefined") {
+		// Server: always make a new query client
+		return createQueryClient();
+	}
 	// Browser: use singleton pattern to keep the same query client
 	clientQueryClientSingleton ??= createQueryClient();
 
