@@ -20,7 +20,13 @@ export type Expense = {
     description: string
     amount: number
     createdAt: string
-    tags: string[]
+    tags: Tag[]
+}
+
+export type Tag = {
+    id: string
+    name: string
+    color?: string
 }
 
 export const columns: ColumnDef<Expense>[] = [
@@ -35,10 +41,11 @@ export const columns: ColumnDef<Expense>[] = [
             <div className="flex flex-wrap gap-2">
                 {row.original.tags.map((tag) => (
                     <span
-                        key={tag}
-                        className="px-2 py-1 bg-gray-200 rounded-lg text-sm text-black"
+                        key={tag.name}
+                        className="px-2 py-1 rounded-lg text-sm text-black"
+                        style={{ backgroundColor: tag.color || "#f0f0f0" }}
                     >
-                        {tag}
+                        {tag.name}
                     </span>
                 ))}
             </div>
@@ -62,41 +69,96 @@ export const columns: ColumnDef<Expense>[] = [
     },
     {
         accessorKey: "amount",
-        header: "Amount",
+        header: () => (
+            <div>
+                <span className="flex items-center justify-end">Amount</span>
+            </div>
+        ),
         cell: ({ row }) => {
             const amount = row.original.amount
-            return new Intl.NumberFormat("en-US", {
+            const formattedAmount = new Intl.NumberFormat("en-US", {
                 style: "currency",
                 currency: "USD",
             }).format(amount)
+
+            return <div>
+                <span className="flex items-center justify-end font-semibold">{formattedAmount}</span>
+            </div>
+        },
+    },
+    // {
+    //     id: "actions",
+    //     cell: ({ row }) => {
+    //         const expense = row.original
+
+    //         return (
+    //             <div className="flex items-center justify-end">
+    //                 <DropdownMenu>
+    //                     <DropdownMenuTrigger asChild>
+    //                         <Button variant="ghost" className="h-8 w-8 p-0">
+    //                             <span className="sr-only">Open menu</span>
+    //                             <MoreHorizontal className="h-4 w-4" />
+    //                         </Button>
+    //                     </DropdownMenuTrigger>
+    //                     <DropdownMenuContent align="end">
+    //                         <DropdownMenuLabel className="font-bold">Actions</DropdownMenuLabel>
+    //                         <DropdownMenuItem
+    //                             onClick={() => navigator.clipboard.writeText(expense.id)}
+    //                         >
+    //                             Copy expense ID
+    //                         </DropdownMenuItem>
+    //                         <DropdownMenuSeparator />
+    //                         <DropdownMenuItem>View customer</DropdownMenuItem>
+    //                         <DropdownMenuItem>View payment details</DropdownMenuItem>
+    //                     </DropdownMenuContent>
+    //                 </DropdownMenu>
+    //             </div>
+    //         )
+    //     },
+    // },
+]
+
+export type TagAmount = {
+    tag: Tag
+    amount: number
+}
+
+export const columnsTags: ColumnDef<TagAmount>[] = [
+    {
+        accessorKey: "name",
+        header: "Name",
+        cell: ({ row }) => {
+            const tag = row.original.tag
+            return (
+                <div className="flex items-center gap-2">
+                    <span>{tag.name}</span>
+                    {tag.color && (
+                        <span
+                            className="w-3 h-3 rounded-full"
+                            style={{ backgroundColor: tag.color }}
+                        />
+                    )}
+                </div>
+            )
         },
     },
     {
-        id: "actions",
+        accessorKey: "amount",
+        header: () => (
+            <div>
+                <span className="flex items-center justify-end">Amount</span>
+            </div>
+        ),
         cell: ({ row }) => {
-            const expense = row.original
+            const amount = row.original.amount
+            const formattedAmount = new Intl.NumberFormat("en-US", {
+                style: "currency",
+                currency: "USD",
+            }).format(amount)
 
-            return (
-                <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" className="h-8 w-8 p-0">
-                            <span className="sr-only">Open menu</span>
-                            <MoreHorizontal className="h-4 w-4" />
-                        </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
-                        <DropdownMenuLabel className="font-bold">Actions</DropdownMenuLabel>
-                        <DropdownMenuItem
-                            onClick={() => navigator.clipboard.writeText(expense.id)}
-                        >
-                            Copy expense ID
-                        </DropdownMenuItem>
-                        <DropdownMenuSeparator />
-                        <DropdownMenuItem>View customer</DropdownMenuItem>
-                        <DropdownMenuItem>View payment details</DropdownMenuItem>
-                    </DropdownMenuContent>
-                </DropdownMenu>
-            )
+            return <div>
+                <span className="flex items-center justify-end font-semibold">{formattedAmount}</span>
+            </div>
         },
     },
 ]

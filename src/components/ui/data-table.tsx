@@ -10,6 +10,7 @@ import type {
 import {
   flexRender,
   getCoreRowModel,
+  getPaginationRowModel,
   getFilteredRowModel,
   useReactTable,
 } from "@tanstack/react-table"
@@ -21,8 +22,10 @@ import {
   TableHead,
   TableHeader,
   TableRow,
+  TableFooter
 } from "~/components/ui/table"
 import { Input } from "~/components/ui/input"
+import { Button } from "~/components/ui/button"
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[]
@@ -32,13 +35,21 @@ interface DataTableProps<TData, TValue> {
 export function DataTable<TData, TValue>({
   columns,
   data,
-}: DataTableProps<TData, TValue>) {
+  tagsFilter = false,
+  smallTable = false,
+  pagination = false
+}: DataTableProps<TData, TValue> & {
+  tagsFilter?: boolean,
+  smallTable?: boolean,
+  pagination?: boolean
+}) {
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([])
 
   const table = useReactTable({
     data,
     columns,
     getCoreRowModel: getCoreRowModel(),
+    getPaginationRowModel: getPaginationRowModel(),
     onColumnFiltersChange: setColumnFilters,
     getFilteredRowModel: getFilteredRowModel(),
     state: {
@@ -47,17 +58,19 @@ export function DataTable<TData, TValue>({
   })
 
   return (
-    <div>
-      <div className="flex items-center py-4">
-        <Input
-          placeholder="Filter tags..."
-          value={(table.getColumn("tags")?.getFilterValue() as string) ?? ""}
-          onChange={(event) =>
-            table.getColumn("tags")?.setFilterValue(event.target.value)
-          }
-          className="max-w-sm"
-        />
-      </div>
+    <div className={`${smallTable ? "w-fit" : "w-full"} my-4`}>
+      {tagsFilter &&
+        <div className="flex items-center py-4">
+          <Input
+            placeholder="Filter tags..."
+            value={(table.getColumn("tags")?.getFilterValue() as string) ?? ""}
+            onChange={(event) =>
+              table.getColumn("tags")?.setFilterValue(event.target.value)
+            }
+            className="max-w-sm"
+          />
+        </div>
+      }
       <div className="rounded-md border">
         <Table>
           <TableHeader>
@@ -99,9 +112,48 @@ export function DataTable<TData, TValue>({
                 </TableCell>
               </TableRow>
             )}
+
           </TableBody>
+          {/* <TableFooter>
+            <TableRow>
+              <TableCell className="font-bold">TOTAL</TableCell>
+              <TableCell colSpan={columns.length - 1} className="text-right font-semibold">
+                {new Intl.NumberFormat("en-US", {
+                  style: "currency",
+                  currency: "USD",
+                }).format(
+                  table
+                    .getFilteredRowModel()
+                    .rows.reduce((sum, row) => {
+                      const amount = row.getValue("amount") as number
+                      return sum + (amount || 0)
+                    }, 0)
+                )}
+              </TableCell>
+            </TableRow>
+          </TableFooter> */}
         </Table>
       </div>
+      {pagination && table.getFilteredRowModel().rows.length > 10 &&
+        <div className="flex items-center justify-end space-x-2 py-4">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => table.previousPage()}
+            disabled={!table.getCanPreviousPage()}
+          >
+            Previous
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => table.nextPage()}
+            disabled={!table.getCanNextPage()}
+          >
+            Next
+          </Button>
+        </div>
+      }
     </div>
   )
 }
