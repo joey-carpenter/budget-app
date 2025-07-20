@@ -60,7 +60,7 @@ export function DataTable<TData, TValue>({
   return (
     <div className={`${smallTable ? "w-fit" : "w-full"} my-4`}>
       {tagsFilter &&
-        <div className="flex items-center py-4">
+        <div className="flex items-center pb-4">
           <Input
             placeholder="Filter tags..."
             value={(table.getColumn("tags")?.getFilterValue() as string) ?? ""}

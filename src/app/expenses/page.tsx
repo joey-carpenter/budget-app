@@ -1,4 +1,4 @@
-import { DataTable } from "~/components/ui/data-table";
+import { DataTable } from "~/app/dashboard/[budget]/data-table";
 import { columns } from "./columns"
 import { columnsTags } from "./columns";
 
@@ -115,6 +115,8 @@ export default async function Expenses() {
             tags: [{ id: "mice-per-diem", name: "Mice Per Diem", color: "#FFAD05" }],
         }
     ]
+
+    
 
     const tagAmounts: TagAmount[] = []
 
