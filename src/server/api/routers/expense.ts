@@ -13,7 +13,7 @@ export const expenseRouter = createTRPCRouter({
         .query(async ({ ctx, input }) => {
             return ctx.db.expense.findMany({
                 where: { budgetId: input },
-                orderBy: { date: "desc" },
+                orderBy: { createdAt: "desc" },
                 include: {
                     tags: true
                 }
@@ -45,6 +45,7 @@ export const expenseRouter = createTRPCRouter({
             description: z.string().min(1, "Description is required"),
             amount: z.number().min(0, "Amount must be a positive number"),
             budgetId: z.string().min(1, "Budget ID is required"),
+            tags: z.array(z.string()).optional(), // Optional array of tag strings
         }))
         .mutation(async ({ ctx, input }) => {
             // Create a new expense and associate it with the specified budget
@@ -54,6 +55,11 @@ export const expenseRouter = createTRPCRouter({
                     amount: input.amount,
                     budget: {
                         connect: { id: input.budgetId },
+                    },
+                    tags: {
+                        create: input.tags?.map(tag => ({
+                            name: tag,
+                        })),
                     },
                 },
             });

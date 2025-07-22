@@ -39,7 +39,6 @@ model Expense {
   amount      Float
   budgetId    String
   budget      Budget   @relation(fields: [budgetId], references: [id])
-  date        DateTime @default(now())
   notes       String?
   tags        Tag[]
   createdAt   DateTime @default(now())
@@ -58,7 +57,7 @@ model BudgetManager {
   userId      String
   budget      Budget @relation(fields: [budgetId], references: [id])
   user        User   @relation(fields: [userId], references: [id])
-  permissions Json
+  permissions Json?
 
   @@unique([budgetId, userId])
 }

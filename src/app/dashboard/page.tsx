@@ -1,4 +1,3 @@
-
 import Link from "next/link";
 import {
     Card,
@@ -11,6 +10,8 @@ import {
 } from "~/components/ui/card"
 
 import { api } from "~/trpc/server";
+import { TrendingUp } from "lucide-react";
+import CreateBudget from "./createBudget";
 
 export default async function Dashboard() {
     const budgets = await api.budget.getBudgets()
@@ -19,6 +20,8 @@ export default async function Dashboard() {
 
     return (
         <main className="flex items-center p-4 flex-col">
+            <CreateBudget />
+
             <div className="p-4 flex flex-col items-start w-full">
                 <div className="text-3xl font-semibold w-full text-start">Managed Budgets</div>
 

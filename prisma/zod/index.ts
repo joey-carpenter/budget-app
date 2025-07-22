@@ -58,7 +58,7 @@ export const TransactionIsolationLevelSchema = z.enum(['ReadUncommitted','ReadCo
 
 export const BudgetScalarFieldEnumSchema = z.enum(['id','name','description','totalAmount','ownerId','createdAt','updatedAt']);
 
-export const ExpenseScalarFieldEnumSchema = z.enum(['id','description','amount','budgetId','date','notes','createdAt','updatedAt']);
+export const ExpenseScalarFieldEnumSchema = z.enum(['id','description','amount','budgetId','notes','createdAt','updatedAt']);
 
 export const TagScalarFieldEnumSchema = z.enum(['id','name']);
 
@@ -76,7 +76,7 @@ export const VerificationTokenScalarFieldEnumSchema = z.enum(['identifier','toke
 
 export const SortOrderSchema = z.enum(['asc','desc']);
 
-export const JsonNullValueInputSchema = z.enum(['JsonNull',]).transform((value) => (value === 'JsonNull' ? Prisma.JsonNull : value));
+export const NullableJsonNullValueInputSchema = z.enum(['DbNull','JsonNull',]).transform((value) => value === 'JsonNull' ? Prisma.JsonNull : value === 'DbNull' ? Prisma.DbNull : value);
 
 export const QueryModeSchema = z.enum(['default','insensitive']);
 
@@ -123,7 +123,6 @@ export const ExpenseSchema = z.object({
   description: z.string(),
   amount: z.number(),
   budgetId: z.string(),
-  date: z.coerce.date(),
   notes: z.string().nullable(),
   createdAt: z.coerce.date(),
   updatedAt: z.coerce.date(),
@@ -136,7 +135,6 @@ export type Expense = z.infer<typeof ExpenseSchema>
 
 export const ExpenseOptionalDefaultsSchema = ExpenseSchema.merge(z.object({
   id: z.string().uuid().optional(),
-  date: z.coerce.date().optional(),
   createdAt: z.coerce.date().optional(),
   updatedAt: z.coerce.date().optional(),
 }))
@@ -171,7 +169,7 @@ export const BudgetManagerSchema = z.object({
   id: z.string().uuid(),
   budgetId: z.string(),
   userId: z.string(),
-  permissions: JsonValueSchema,
+  permissions: JsonValueSchema.nullable(),
 })
 
 export type BudgetManager = z.infer<typeof BudgetManagerSchema>
@@ -375,7 +373,6 @@ export const ExpenseSelectSchema: z.ZodType<Prisma.ExpenseSelect> = z.object({
   description: z.boolean().optional(),
   amount: z.boolean().optional(),
   budgetId: z.boolean().optional(),
-  date: z.boolean().optional(),
   notes: z.boolean().optional(),
   createdAt: z.boolean().optional(),
   updatedAt: z.boolean().optional(),
@@ -645,7 +642,6 @@ export const ExpenseWhereInputSchema: z.ZodType<Prisma.ExpenseWhereInput> = z.ob
   description: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
   amount: z.union([ z.lazy(() => FloatFilterSchema),z.number() ]).optional(),
   budgetId: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
-  date: z.union([ z.lazy(() => DateTimeFilterSchema),z.coerce.date() ]).optional(),
   notes: z.union([ z.lazy(() => StringNullableFilterSchema),z.string() ]).optional().nullable(),
   createdAt: z.union([ z.lazy(() => DateTimeFilterSchema),z.coerce.date() ]).optional(),
   updatedAt: z.union([ z.lazy(() => DateTimeFilterSchema),z.coerce.date() ]).optional(),
@@ -658,7 +654,6 @@ export const ExpenseOrderByWithRelationInputSchema: z.ZodType<Prisma.ExpenseOrde
   description: z.lazy(() => SortOrderSchema).optional(),
   amount: z.lazy(() => SortOrderSchema).optional(),
   budgetId: z.lazy(() => SortOrderSchema).optional(),
-  date: z.lazy(() => SortOrderSchema).optional(),
   notes: z.union([ z.lazy(() => SortOrderSchema),z.lazy(() => SortOrderInputSchema) ]).optional(),
   createdAt: z.lazy(() => SortOrderSchema).optional(),
   updatedAt: z.lazy(() => SortOrderSchema).optional(),
@@ -677,7 +672,6 @@ export const ExpenseWhereUniqueInputSchema: z.ZodType<Prisma.ExpenseWhereUniqueI
   description: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
   amount: z.union([ z.lazy(() => FloatFilterSchema),z.number() ]).optional(),
   budgetId: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
-  date: z.union([ z.lazy(() => DateTimeFilterSchema),z.coerce.date() ]).optional(),
   notes: z.union([ z.lazy(() => StringNullableFilterSchema),z.string() ]).optional().nullable(),
   createdAt: z.union([ z.lazy(() => DateTimeFilterSchema),z.coerce.date() ]).optional(),
   updatedAt: z.union([ z.lazy(() => DateTimeFilterSchema),z.coerce.date() ]).optional(),
@@ -690,7 +684,6 @@ export const ExpenseOrderByWithAggregationInputSchema: z.ZodType<Prisma.ExpenseO
   description: z.lazy(() => SortOrderSchema).optional(),
   amount: z.lazy(() => SortOrderSchema).optional(),
   budgetId: z.lazy(() => SortOrderSchema).optional(),
-  date: z.lazy(() => SortOrderSchema).optional(),
   notes: z.union([ z.lazy(() => SortOrderSchema),z.lazy(() => SortOrderInputSchema) ]).optional(),
   createdAt: z.lazy(() => SortOrderSchema).optional(),
   updatedAt: z.lazy(() => SortOrderSchema).optional(),
@@ -709,7 +702,6 @@ export const ExpenseScalarWhereWithAggregatesInputSchema: z.ZodType<Prisma.Expen
   description: z.union([ z.lazy(() => StringWithAggregatesFilterSchema),z.string() ]).optional(),
   amount: z.union([ z.lazy(() => FloatWithAggregatesFilterSchema),z.number() ]).optional(),
   budgetId: z.union([ z.lazy(() => StringWithAggregatesFilterSchema),z.string() ]).optional(),
-  date: z.union([ z.lazy(() => DateTimeWithAggregatesFilterSchema),z.coerce.date() ]).optional(),
   notes: z.union([ z.lazy(() => StringNullableWithAggregatesFilterSchema),z.string() ]).optional().nullable(),
   createdAt: z.union([ z.lazy(() => DateTimeWithAggregatesFilterSchema),z.coerce.date() ]).optional(),
   updatedAt: z.union([ z.lazy(() => DateTimeWithAggregatesFilterSchema),z.coerce.date() ]).optional(),
@@ -774,7 +766,7 @@ export const BudgetManagerWhereInputSchema: z.ZodType<Prisma.BudgetManagerWhereI
   id: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
   budgetId: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
   userId: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
-  permissions: z.lazy(() => JsonFilterSchema).optional(),
+  permissions: z.lazy(() => JsonNullableFilterSchema).optional(),
   budget: z.union([ z.lazy(() => BudgetScalarRelationFilterSchema),z.lazy(() => BudgetWhereInputSchema) ]).optional(),
   user: z.union([ z.lazy(() => UserScalarRelationFilterSchema),z.lazy(() => UserWhereInputSchema) ]).optional(),
 }).strict();
@@ -783,7 +775,7 @@ export const BudgetManagerOrderByWithRelationInputSchema: z.ZodType<Prisma.Budge
   id: z.lazy(() => SortOrderSchema).optional(),
   budgetId: z.lazy(() => SortOrderSchema).optional(),
   userId: z.lazy(() => SortOrderSchema).optional(),
-  permissions: z.lazy(() => SortOrderSchema).optional(),
+  permissions: z.union([ z.lazy(() => SortOrderSchema),z.lazy(() => SortOrderInputSchema) ]).optional(),
   budget: z.lazy(() => BudgetOrderByWithRelationInputSchema).optional(),
   user: z.lazy(() => UserOrderByWithRelationInputSchema).optional()
 }).strict();
@@ -808,7 +800,7 @@ export const BudgetManagerWhereUniqueInputSchema: z.ZodType<Prisma.BudgetManager
   NOT: z.union([ z.lazy(() => BudgetManagerWhereInputSchema),z.lazy(() => BudgetManagerWhereInputSchema).array() ]).optional(),
   budgetId: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
   userId: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
-  permissions: z.lazy(() => JsonFilterSchema).optional(),
+  permissions: z.lazy(() => JsonNullableFilterSchema).optional(),
   budget: z.union([ z.lazy(() => BudgetScalarRelationFilterSchema),z.lazy(() => BudgetWhereInputSchema) ]).optional(),
   user: z.union([ z.lazy(() => UserScalarRelationFilterSchema),z.lazy(() => UserWhereInputSchema) ]).optional(),
 }).strict());
@@ -817,7 +809,7 @@ export const BudgetManagerOrderByWithAggregationInputSchema: z.ZodType<Prisma.Bu
   id: z.lazy(() => SortOrderSchema).optional(),
   budgetId: z.lazy(() => SortOrderSchema).optional(),
   userId: z.lazy(() => SortOrderSchema).optional(),
-  permissions: z.lazy(() => SortOrderSchema).optional(),
+  permissions: z.union([ z.lazy(() => SortOrderSchema),z.lazy(() => SortOrderInputSchema) ]).optional(),
   _count: z.lazy(() => BudgetManagerCountOrderByAggregateInputSchema).optional(),
   _max: z.lazy(() => BudgetManagerMaxOrderByAggregateInputSchema).optional(),
   _min: z.lazy(() => BudgetManagerMinOrderByAggregateInputSchema).optional()
@@ -830,7 +822,7 @@ export const BudgetManagerScalarWhereWithAggregatesInputSchema: z.ZodType<Prisma
   id: z.union([ z.lazy(() => StringWithAggregatesFilterSchema),z.string() ]).optional(),
   budgetId: z.union([ z.lazy(() => StringWithAggregatesFilterSchema),z.string() ]).optional(),
   userId: z.union([ z.lazy(() => StringWithAggregatesFilterSchema),z.string() ]).optional(),
-  permissions: z.lazy(() => JsonWithAggregatesFilterSchema).optional()
+  permissions: z.lazy(() => JsonNullableWithAggregatesFilterSchema).optional()
 }).strict();
 
 export const PostWhereInputSchema: z.ZodType<Prisma.PostWhereInput> = z.object({
@@ -1280,7 +1272,6 @@ export const ExpenseCreateInputSchema: z.ZodType<Prisma.ExpenseCreateInput> = z.
   id: z.string().uuid().optional(),
   description: z.string(),
   amount: z.number(),
-  date: z.coerce.date().optional(),
   notes: z.string().optional().nullable(),
   createdAt: z.coerce.date().optional(),
   updatedAt: z.coerce.date().optional(),
@@ -1293,7 +1284,6 @@ export const ExpenseUncheckedCreateInputSchema: z.ZodType<Prisma.ExpenseUnchecke
   description: z.string(),
   amount: z.number(),
   budgetId: z.string(),
-  date: z.coerce.date().optional(),
   notes: z.string().optional().nullable(),
   createdAt: z.coerce.date().optional(),
   updatedAt: z.coerce.date().optional(),
@@ -1304,7 +1294,6 @@ export const ExpenseUpdateInputSchema: z.ZodType<Prisma.ExpenseUpdateInput> = z.
   id: z.union([ z.string().uuid(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   description: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   amount: z.union([ z.number(),z.lazy(() => FloatFieldUpdateOperationsInputSchema) ]).optional(),
-  date: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
   notes: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
   updatedAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
@@ -1317,7 +1306,6 @@ export const ExpenseUncheckedUpdateInputSchema: z.ZodType<Prisma.ExpenseUnchecke
   description: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   amount: z.union([ z.number(),z.lazy(() => FloatFieldUpdateOperationsInputSchema) ]).optional(),
   budgetId: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
-  date: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
   notes: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
   updatedAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
@@ -1329,7 +1317,6 @@ export const ExpenseCreateManyInputSchema: z.ZodType<Prisma.ExpenseCreateManyInp
   description: z.string(),
   amount: z.number(),
   budgetId: z.string(),
-  date: z.coerce.date().optional(),
   notes: z.string().optional().nullable(),
   createdAt: z.coerce.date().optional(),
   updatedAt: z.coerce.date().optional()
@@ -1339,7 +1326,6 @@ export const ExpenseUpdateManyMutationInputSchema: z.ZodType<Prisma.ExpenseUpdat
   id: z.union([ z.string().uuid(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   description: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   amount: z.union([ z.number(),z.lazy(() => FloatFieldUpdateOperationsInputSchema) ]).optional(),
-  date: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
   notes: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
   updatedAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
@@ -1350,7 +1336,6 @@ export const ExpenseUncheckedUpdateManyInputSchema: z.ZodType<Prisma.ExpenseUnch
   description: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   amount: z.union([ z.number(),z.lazy(() => FloatFieldUpdateOperationsInputSchema) ]).optional(),
   budgetId: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
-  date: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
   notes: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
   updatedAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
@@ -1397,7 +1382,7 @@ export const TagUncheckedUpdateManyInputSchema: z.ZodType<Prisma.TagUncheckedUpd
 
 export const BudgetManagerCreateInputSchema: z.ZodType<Prisma.BudgetManagerCreateInput> = z.object({
   id: z.string().uuid().optional(),
-  permissions: z.union([ z.lazy(() => JsonNullValueInputSchema),InputJsonValueSchema ]),
+  permissions: z.union([ z.lazy(() => NullableJsonNullValueInputSchema),InputJsonValueSchema ]).optional(),
   budget: z.lazy(() => BudgetCreateNestedOneWithoutManagersInputSchema),
   user: z.lazy(() => UserCreateNestedOneWithoutManagedBudgetsInputSchema)
 }).strict();
@@ -1406,12 +1391,12 @@ export const BudgetManagerUncheckedCreateInputSchema: z.ZodType<Prisma.BudgetMan
   id: z.string().uuid().optional(),
   budgetId: z.string(),
   userId: z.string(),
-  permissions: z.union([ z.lazy(() => JsonNullValueInputSchema),InputJsonValueSchema ]),
+  permissions: z.union([ z.lazy(() => NullableJsonNullValueInputSchema),InputJsonValueSchema ]).optional(),
 }).strict();
 
 export const BudgetManagerUpdateInputSchema: z.ZodType<Prisma.BudgetManagerUpdateInput> = z.object({
   id: z.union([ z.string().uuid(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
-  permissions: z.union([ z.lazy(() => JsonNullValueInputSchema),InputJsonValueSchema ]).optional(),
+  permissions: z.union([ z.lazy(() => NullableJsonNullValueInputSchema),InputJsonValueSchema ]).optional(),
   budget: z.lazy(() => BudgetUpdateOneRequiredWithoutManagersNestedInputSchema).optional(),
   user: z.lazy(() => UserUpdateOneRequiredWithoutManagedBudgetsNestedInputSchema).optional()
 }).strict();
@@ -1420,26 +1405,26 @@ export const BudgetManagerUncheckedUpdateInputSchema: z.ZodType<Prisma.BudgetMan
   id: z.union([ z.string().uuid(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   budgetId: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   userId: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
-  permissions: z.union([ z.lazy(() => JsonNullValueInputSchema),InputJsonValueSchema ]).optional(),
+  permissions: z.union([ z.lazy(() => NullableJsonNullValueInputSchema),InputJsonValueSchema ]).optional(),
 }).strict();
 
 export const BudgetManagerCreateManyInputSchema: z.ZodType<Prisma.BudgetManagerCreateManyInput> = z.object({
   id: z.string().uuid().optional(),
   budgetId: z.string(),
   userId: z.string(),
-  permissions: z.union([ z.lazy(() => JsonNullValueInputSchema),InputJsonValueSchema ]),
+  permissions: z.union([ z.lazy(() => NullableJsonNullValueInputSchema),InputJsonValueSchema ]).optional(),
 }).strict();
 
 export const BudgetManagerUpdateManyMutationInputSchema: z.ZodType<Prisma.BudgetManagerUpdateManyMutationInput> = z.object({
   id: z.union([ z.string().uuid(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
-  permissions: z.union([ z.lazy(() => JsonNullValueInputSchema),InputJsonValueSchema ]).optional(),
+  permissions: z.union([ z.lazy(() => NullableJsonNullValueInputSchema),InputJsonValueSchema ]).optional(),
 }).strict();
 
 export const BudgetManagerUncheckedUpdateManyInputSchema: z.ZodType<Prisma.BudgetManagerUncheckedUpdateManyInput> = z.object({
   id: z.union([ z.string().uuid(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   budgetId: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   userId: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
-  permissions: z.union([ z.lazy(() => JsonNullValueInputSchema),InputJsonValueSchema ]).optional(),
+  permissions: z.union([ z.lazy(() => NullableJsonNullValueInputSchema),InputJsonValueSchema ]).optional(),
 }).strict();
 
 export const PostCreateInputSchema: z.ZodType<Prisma.PostCreateInput> = z.object({
@@ -1977,7 +1962,6 @@ export const ExpenseCountOrderByAggregateInputSchema: z.ZodType<Prisma.ExpenseCo
   description: z.lazy(() => SortOrderSchema).optional(),
   amount: z.lazy(() => SortOrderSchema).optional(),
   budgetId: z.lazy(() => SortOrderSchema).optional(),
-  date: z.lazy(() => SortOrderSchema).optional(),
   notes: z.lazy(() => SortOrderSchema).optional(),
   createdAt: z.lazy(() => SortOrderSchema).optional(),
   updatedAt: z.lazy(() => SortOrderSchema).optional()
@@ -1992,7 +1976,6 @@ export const ExpenseMaxOrderByAggregateInputSchema: z.ZodType<Prisma.ExpenseMaxO
   description: z.lazy(() => SortOrderSchema).optional(),
   amount: z.lazy(() => SortOrderSchema).optional(),
   budgetId: z.lazy(() => SortOrderSchema).optional(),
-  date: z.lazy(() => SortOrderSchema).optional(),
   notes: z.lazy(() => SortOrderSchema).optional(),
   createdAt: z.lazy(() => SortOrderSchema).optional(),
   updatedAt: z.lazy(() => SortOrderSchema).optional()
@@ -2003,7 +1986,6 @@ export const ExpenseMinOrderByAggregateInputSchema: z.ZodType<Prisma.ExpenseMinO
   description: z.lazy(() => SortOrderSchema).optional(),
   amount: z.lazy(() => SortOrderSchema).optional(),
   budgetId: z.lazy(() => SortOrderSchema).optional(),
-  date: z.lazy(() => SortOrderSchema).optional(),
   notes: z.lazy(() => SortOrderSchema).optional(),
   createdAt: z.lazy(() => SortOrderSchema).optional(),
   updatedAt: z.lazy(() => SortOrderSchema).optional()
@@ -2028,7 +2010,7 @@ export const TagMinOrderByAggregateInputSchema: z.ZodType<Prisma.TagMinOrderByAg
   name: z.lazy(() => SortOrderSchema).optional()
 }).strict();
 
-export const JsonFilterSchema: z.ZodType<Prisma.JsonFilter> = z.object({
+export const JsonNullableFilterSchema: z.ZodType<Prisma.JsonNullableFilter> = z.object({
   equals: InputJsonValueSchema.optional(),
   path: z.string().array().optional(),
   mode: z.lazy(() => QueryModeSchema).optional(),
@@ -2069,7 +2051,7 @@ export const BudgetManagerMinOrderByAggregateInputSchema: z.ZodType<Prisma.Budge
   userId: z.lazy(() => SortOrderSchema).optional()
 }).strict();
 
-export const JsonWithAggregatesFilterSchema: z.ZodType<Prisma.JsonWithAggregatesFilter> = z.object({
+export const JsonNullableWithAggregatesFilterSchema: z.ZodType<Prisma.JsonNullableWithAggregatesFilter> = z.object({
   equals: InputJsonValueSchema.optional(),
   path: z.string().array().optional(),
   mode: z.lazy(() => QueryModeSchema).optional(),
@@ -2084,9 +2066,9 @@ export const JsonWithAggregatesFilterSchema: z.ZodType<Prisma.JsonWithAggregates
   gt: InputJsonValueSchema.optional(),
   gte: InputJsonValueSchema.optional(),
   not: InputJsonValueSchema.optional(),
-  _count: z.lazy(() => NestedIntFilterSchema).optional(),
-  _min: z.lazy(() => NestedJsonFilterSchema).optional(),
-  _max: z.lazy(() => NestedJsonFilterSchema).optional()
+  _count: z.lazy(() => NestedIntNullableFilterSchema).optional(),
+  _min: z.lazy(() => NestedJsonNullableFilterSchema).optional(),
+  _max: z.lazy(() => NestedJsonNullableFilterSchema).optional()
 }).strict();
 
 export const IntFilterSchema: z.ZodType<Prisma.IntFilter> = z.object({
@@ -3015,7 +2997,7 @@ export const NestedDateTimeWithAggregatesFilterSchema: z.ZodType<Prisma.NestedDa
   _max: z.lazy(() => NestedDateTimeFilterSchema).optional()
 }).strict();
 
-export const NestedJsonFilterSchema: z.ZodType<Prisma.NestedJsonFilter> = z.object({
+export const NestedJsonNullableFilterSchema: z.ZodType<Prisma.NestedJsonNullableFilter> = z.object({
   equals: InputJsonValueSchema.optional(),
   path: z.string().array().optional(),
   mode: z.lazy(() => QueryModeSchema).optional(),
@@ -3133,7 +3115,6 @@ export const ExpenseCreateWithoutBudgetInputSchema: z.ZodType<Prisma.ExpenseCrea
   id: z.string().uuid().optional(),
   description: z.string(),
   amount: z.number(),
-  date: z.coerce.date().optional(),
   notes: z.string().optional().nullable(),
   createdAt: z.coerce.date().optional(),
   updatedAt: z.coerce.date().optional(),
@@ -3144,7 +3125,6 @@ export const ExpenseUncheckedCreateWithoutBudgetInputSchema: z.ZodType<Prisma.Ex
   id: z.string().uuid().optional(),
   description: z.string(),
   amount: z.number(),
-  date: z.coerce.date().optional(),
   notes: z.string().optional().nullable(),
   createdAt: z.coerce.date().optional(),
   updatedAt: z.coerce.date().optional(),
@@ -3163,14 +3143,14 @@ export const ExpenseCreateManyBudgetInputEnvelopeSchema: z.ZodType<Prisma.Expens
 
 export const BudgetManagerCreateWithoutBudgetInputSchema: z.ZodType<Prisma.BudgetManagerCreateWithoutBudgetInput> = z.object({
   id: z.string().uuid().optional(),
-  permissions: z.union([ z.lazy(() => JsonNullValueInputSchema),InputJsonValueSchema ]),
+  permissions: z.union([ z.lazy(() => NullableJsonNullValueInputSchema),InputJsonValueSchema ]).optional(),
   user: z.lazy(() => UserCreateNestedOneWithoutManagedBudgetsInputSchema)
 }).strict();
 
 export const BudgetManagerUncheckedCreateWithoutBudgetInputSchema: z.ZodType<Prisma.BudgetManagerUncheckedCreateWithoutBudgetInput> = z.object({
   id: z.string().uuid().optional(),
   userId: z.string(),
-  permissions: z.union([ z.lazy(() => JsonNullValueInputSchema),InputJsonValueSchema ]),
+  permissions: z.union([ z.lazy(() => NullableJsonNullValueInputSchema),InputJsonValueSchema ]).optional(),
 }).strict();
 
 export const BudgetManagerCreateOrConnectWithoutBudgetInputSchema: z.ZodType<Prisma.BudgetManagerCreateOrConnectWithoutBudgetInput> = z.object({
@@ -3242,7 +3222,6 @@ export const ExpenseScalarWhereInputSchema: z.ZodType<Prisma.ExpenseScalarWhereI
   description: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
   amount: z.union([ z.lazy(() => FloatFilterSchema),z.number() ]).optional(),
   budgetId: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
-  date: z.union([ z.lazy(() => DateTimeFilterSchema),z.coerce.date() ]).optional(),
   notes: z.union([ z.lazy(() => StringNullableFilterSchema),z.string() ]).optional().nullable(),
   createdAt: z.union([ z.lazy(() => DateTimeFilterSchema),z.coerce.date() ]).optional(),
   updatedAt: z.union([ z.lazy(() => DateTimeFilterSchema),z.coerce.date() ]).optional(),
@@ -3271,7 +3250,7 @@ export const BudgetManagerScalarWhereInputSchema: z.ZodType<Prisma.BudgetManager
   id: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
   budgetId: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
   userId: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
-  permissions: z.lazy(() => JsonFilterSchema).optional()
+  permissions: z.lazy(() => JsonNullableFilterSchema).optional()
 }).strict();
 
 export const BudgetCreateWithoutExpensesInputSchema: z.ZodType<Prisma.BudgetCreateWithoutExpensesInput> = z.object({
@@ -3377,7 +3356,6 @@ export const ExpenseCreateWithoutTagsInputSchema: z.ZodType<Prisma.ExpenseCreate
   id: z.string().uuid().optional(),
   description: z.string(),
   amount: z.number(),
-  date: z.coerce.date().optional(),
   notes: z.string().optional().nullable(),
   createdAt: z.coerce.date().optional(),
   updatedAt: z.coerce.date().optional(),
@@ -3389,7 +3367,6 @@ export const ExpenseUncheckedCreateWithoutTagsInputSchema: z.ZodType<Prisma.Expe
   description: z.string(),
   amount: z.number(),
   budgetId: z.string(),
-  date: z.coerce.date().optional(),
   notes: z.string().optional().nullable(),
   createdAt: z.coerce.date().optional(),
   updatedAt: z.coerce.date().optional()
@@ -3851,14 +3828,14 @@ export const BudgetCreateManyOwnerInputEnvelopeSchema: z.ZodType<Prisma.BudgetCr
 
 export const BudgetManagerCreateWithoutUserInputSchema: z.ZodType<Prisma.BudgetManagerCreateWithoutUserInput> = z.object({
   id: z.string().uuid().optional(),
-  permissions: z.union([ z.lazy(() => JsonNullValueInputSchema),InputJsonValueSchema ]),
+  permissions: z.union([ z.lazy(() => NullableJsonNullValueInputSchema),InputJsonValueSchema ]).optional(),
   budget: z.lazy(() => BudgetCreateNestedOneWithoutManagersInputSchema)
 }).strict();
 
 export const BudgetManagerUncheckedCreateWithoutUserInputSchema: z.ZodType<Prisma.BudgetManagerUncheckedCreateWithoutUserInput> = z.object({
   id: z.string().uuid().optional(),
   budgetId: z.string(),
-  permissions: z.union([ z.lazy(() => JsonNullValueInputSchema),InputJsonValueSchema ]),
+  permissions: z.union([ z.lazy(() => NullableJsonNullValueInputSchema),InputJsonValueSchema ]).optional(),
 }).strict();
 
 export const BudgetManagerCreateOrConnectWithoutUserInputSchema: z.ZodType<Prisma.BudgetManagerCreateOrConnectWithoutUserInput> = z.object({
@@ -4008,7 +3985,6 @@ export const ExpenseCreateManyBudgetInputSchema: z.ZodType<Prisma.ExpenseCreateM
   id: z.string().uuid().optional(),
   description: z.string(),
   amount: z.number(),
-  date: z.coerce.date().optional(),
   notes: z.string().optional().nullable(),
   createdAt: z.coerce.date().optional(),
   updatedAt: z.coerce.date().optional()
@@ -4017,14 +3993,13 @@ export const ExpenseCreateManyBudgetInputSchema: z.ZodType<Prisma.ExpenseCreateM
 export const BudgetManagerCreateManyBudgetInputSchema: z.ZodType<Prisma.BudgetManagerCreateManyBudgetInput> = z.object({
   id: z.string().uuid().optional(),
   userId: z.string(),
-  permissions: z.union([ z.lazy(() => JsonNullValueInputSchema),InputJsonValueSchema ]),
+  permissions: z.union([ z.lazy(() => NullableJsonNullValueInputSchema),InputJsonValueSchema ]).optional(),
 }).strict();
 
 export const ExpenseUpdateWithoutBudgetInputSchema: z.ZodType<Prisma.ExpenseUpdateWithoutBudgetInput> = z.object({
   id: z.union([ z.string().uuid(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   description: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   amount: z.union([ z.number(),z.lazy(() => FloatFieldUpdateOperationsInputSchema) ]).optional(),
-  date: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
   notes: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
   updatedAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
@@ -4035,7 +4010,6 @@ export const ExpenseUncheckedUpdateWithoutBudgetInputSchema: z.ZodType<Prisma.Ex
   id: z.union([ z.string().uuid(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   description: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   amount: z.union([ z.number(),z.lazy(() => FloatFieldUpdateOperationsInputSchema) ]).optional(),
-  date: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
   notes: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
   updatedAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
@@ -4046,7 +4020,6 @@ export const ExpenseUncheckedUpdateManyWithoutBudgetInputSchema: z.ZodType<Prism
   id: z.union([ z.string().uuid(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   description: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   amount: z.union([ z.number(),z.lazy(() => FloatFieldUpdateOperationsInputSchema) ]).optional(),
-  date: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
   notes: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
   updatedAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
@@ -4054,20 +4027,20 @@ export const ExpenseUncheckedUpdateManyWithoutBudgetInputSchema: z.ZodType<Prism
 
 export const BudgetManagerUpdateWithoutBudgetInputSchema: z.ZodType<Prisma.BudgetManagerUpdateWithoutBudgetInput> = z.object({
   id: z.union([ z.string().uuid(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
-  permissions: z.union([ z.lazy(() => JsonNullValueInputSchema),InputJsonValueSchema ]).optional(),
+  permissions: z.union([ z.lazy(() => NullableJsonNullValueInputSchema),InputJsonValueSchema ]).optional(),
   user: z.lazy(() => UserUpdateOneRequiredWithoutManagedBudgetsNestedInputSchema).optional()
 }).strict();
 
 export const BudgetManagerUncheckedUpdateWithoutBudgetInputSchema: z.ZodType<Prisma.BudgetManagerUncheckedUpdateWithoutBudgetInput> = z.object({
   id: z.union([ z.string().uuid(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   userId: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
-  permissions: z.union([ z.lazy(() => JsonNullValueInputSchema),InputJsonValueSchema ]).optional(),
+  permissions: z.union([ z.lazy(() => NullableJsonNullValueInputSchema),InputJsonValueSchema ]).optional(),
 }).strict();
 
 export const BudgetManagerUncheckedUpdateManyWithoutBudgetInputSchema: z.ZodType<Prisma.BudgetManagerUncheckedUpdateManyWithoutBudgetInput> = z.object({
   id: z.union([ z.string().uuid(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   userId: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
-  permissions: z.union([ z.lazy(() => JsonNullValueInputSchema),InputJsonValueSchema ]).optional(),
+  permissions: z.union([ z.lazy(() => NullableJsonNullValueInputSchema),InputJsonValueSchema ]).optional(),
 }).strict();
 
 export const TagUpdateWithoutExpensesInputSchema: z.ZodType<Prisma.TagUpdateWithoutExpensesInput> = z.object({
@@ -4089,7 +4062,6 @@ export const ExpenseUpdateWithoutTagsInputSchema: z.ZodType<Prisma.ExpenseUpdate
   id: z.union([ z.string().uuid(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   description: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   amount: z.union([ z.number(),z.lazy(() => FloatFieldUpdateOperationsInputSchema) ]).optional(),
-  date: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
   notes: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
   updatedAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
@@ -4101,7 +4073,6 @@ export const ExpenseUncheckedUpdateWithoutTagsInputSchema: z.ZodType<Prisma.Expe
   description: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   amount: z.union([ z.number(),z.lazy(() => FloatFieldUpdateOperationsInputSchema) ]).optional(),
   budgetId: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
-  date: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
   notes: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
   updatedAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
@@ -4112,7 +4083,6 @@ export const ExpenseUncheckedUpdateManyWithoutTagsInputSchema: z.ZodType<Prisma.
   description: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   amount: z.union([ z.number(),z.lazy(() => FloatFieldUpdateOperationsInputSchema) ]).optional(),
   budgetId: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
-  date: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
   notes: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
   updatedAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
@@ -4158,7 +4128,7 @@ export const BudgetCreateManyOwnerInputSchema: z.ZodType<Prisma.BudgetCreateMany
 export const BudgetManagerCreateManyUserInputSchema: z.ZodType<Prisma.BudgetManagerCreateManyUserInput> = z.object({
   id: z.string().uuid().optional(),
   budgetId: z.string(),
-  permissions: z.union([ z.lazy(() => JsonNullValueInputSchema),InputJsonValueSchema ]),
+  permissions: z.union([ z.lazy(() => NullableJsonNullValueInputSchema),InputJsonValueSchema ]).optional(),
 }).strict();
 
 export const AccountUpdateWithoutUserInputSchema: z.ZodType<Prisma.AccountUpdateWithoutUserInput> = z.object({
@@ -4277,20 +4247,20 @@ export const BudgetUncheckedUpdateManyWithoutOwnerInputSchema: z.ZodType<Prisma.
 
 export const BudgetManagerUpdateWithoutUserInputSchema: z.ZodType<Prisma.BudgetManagerUpdateWithoutUserInput> = z.object({
   id: z.union([ z.string().uuid(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
-  permissions: z.union([ z.lazy(() => JsonNullValueInputSchema),InputJsonValueSchema ]).optional(),
+  permissions: z.union([ z.lazy(() => NullableJsonNullValueInputSchema),InputJsonValueSchema ]).optional(),
   budget: z.lazy(() => BudgetUpdateOneRequiredWithoutManagersNestedInputSchema).optional()
 }).strict();
 
 export const BudgetManagerUncheckedUpdateWithoutUserInputSchema: z.ZodType<Prisma.BudgetManagerUncheckedUpdateWithoutUserInput> = z.object({
   id: z.union([ z.string().uuid(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   budgetId: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
-  permissions: z.union([ z.lazy(() => JsonNullValueInputSchema),InputJsonValueSchema ]).optional(),
+  permissions: z.union([ z.lazy(() => NullableJsonNullValueInputSchema),InputJsonValueSchema ]).optional(),
 }).strict();
 
 export const BudgetManagerUncheckedUpdateManyWithoutUserInputSchema: z.ZodType<Prisma.BudgetManagerUncheckedUpdateManyWithoutUserInput> = z.object({
   id: z.union([ z.string().uuid(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   budgetId: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
-  permissions: z.union([ z.lazy(() => JsonNullValueInputSchema),InputJsonValueSchema ]).optional(),
+  permissions: z.union([ z.lazy(() => NullableJsonNullValueInputSchema),InputJsonValueSchema ]).optional(),
 }).strict();
 
 /////////////////////////////////////////

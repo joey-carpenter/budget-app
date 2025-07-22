@@ -20,32 +20,8 @@ import { Button } from "~/components/ui/button";
 
 import { Check, ChevronsUpDown } from "lucide-react";
 
-const frameworks = [
-  {
-    value: "october",
-    label: "October",
-  },
-  {
-    value: "november",
-    label: "November",
-  },
-  {
-    value: "december",
-    label: "December",
-  },
-  {
-    value: "january",
-    label: "January",
-  },
-  {
-    value: "all",
-    label: "All",
-  },
-]
-
-export function ComboboxDemo() {
+export function ComboboxDemo({ month, setMonth, months }: { month: { month: number, year: number }, setMonth: (month: { month: number, year: number }) => void, months: { label: string, month: number, year: number }[] }) {
   const [open, setOpen] = React.useState(false)
-  const [value, setValue] = React.useState(frameworks[0]!.value)
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -56,9 +32,7 @@ export function ComboboxDemo() {
           aria-expanded={open}
           className="w-fit justify-between font-semibold text-6xl p-10 font-mono"
         >
-          {value
-            ? frameworks.find((framework) => framework.value === value)?.label
-            : "Select framework..."}
+          {months.find((m) => m.month === month.month && m.year === month.year)?.label}
           <ChevronsUpDown className="scale-200 ml-4" />
         </Button>
       </PopoverTrigger>
@@ -67,22 +41,21 @@ export function ComboboxDemo() {
         <Command>
           <CommandInput placeholder="Search framework..." className="h-9" />
           <CommandList>
-            <CommandEmpty>No framework found.</CommandEmpty>
+            <CommandEmpty>No month found.</CommandEmpty>
             <CommandGroup>
-              {frameworks.map((framework) => (
+              {months.map((m) => (
                 <CommandItem
-                  key={framework.value}
-                  value={framework.value}
+                  key={m.label}
                   onSelect={(currentValue) => {
-                    setValue(currentValue === value ? "" : currentValue)
+                    setMonth({ month: m.month, year: m.year })
                     setOpen(false)
                   }}
                 >
-                  {framework.label}
+                  {m.label}
                   <Check
                     className={cn(
                       "ml-auto",
-                      value === framework.value ? "opacity-100" : "opacity-0"
+                      month.month === m.month && month.year === m.year ? "opacity-100" : "opacity-0"
                     )}
                   />
                 </CommandItem>
