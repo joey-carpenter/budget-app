@@ -28,7 +28,11 @@ import { UserRound } from "lucide-react";
 
 import ModeToggle from "~/components/mode-toggle"
 
-function Navbar() {
+import { auth } from "~/server/auth";
+
+async function Navbar() {
+	const session = await auth();
+
     return (
         <nav className="flex items-center justify-between p-4">
             {/* Left Side: Logo and Navigation Links */}
@@ -67,7 +71,7 @@ function Navbar() {
 										/>
 									</Button> */}
                         <Avatar>
-                            <AvatarImage src="https://github.com/joey-carpenter.png" />
+                            <AvatarImage src={session?.user.image || ""} />
                             <AvatarFallback>
                                 <UserRound
                                     size={32}
