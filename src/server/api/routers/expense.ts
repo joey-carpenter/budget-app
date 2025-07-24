@@ -57,9 +57,10 @@ export const expenseRouter = createTRPCRouter({
                         connect: { id: input.budgetId },
                     },
                     tags: {
-                        create: input.tags?.map(tag => ({
-                            name: tag,
-                        })),
+                        connectOrCreate: input.tags?.map(tag => ({
+                            where: { name: tag },
+                            create: { name: tag },
+                        })) || [],
                     },
                 },
             });

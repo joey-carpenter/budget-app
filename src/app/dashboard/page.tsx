@@ -10,8 +10,9 @@ import {
 } from "~/components/ui/card"
 
 import { api } from "~/trpc/server";
-import { TrendingUp } from "lucide-react";
+import { Ellipsis, TrendingUp } from "lucide-react";
 import CreateBudget from "./createBudget";
+import { Button } from "~/components/ui/button";
 
 export default async function Dashboard() {
     const budgets = await api.budget.getBudgets()
@@ -72,8 +73,8 @@ function Researcher({ id, name, budget, description }: {
         <Link href={`/dashboard/${id}`}>
             <Card className="w-72 h-36 cursor-pointer hover:shadow-lg transition-shadow duration-300">
                 <CardHeader className="h-full">
-                    <CardTitle className="flex justify-between">
-                        <span>{name}</span>
+                    <CardTitle className="flex items-center">
+                        <span className="mr-auto">{name}</span>
                         <span className={budget < 0 ? "text-red-500" : ""}>${budget}</span>
                     </CardTitle>
                     <CardDescription className="w-full h-full flex items-center">{description}</CardDescription>

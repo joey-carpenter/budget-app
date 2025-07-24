@@ -52,6 +52,12 @@ export default function Expenses() {
 
     const addToBudget = api.budget.addToBudget.useMutation();
 
+    const removeBudget = api.budget.deleteBudget.useMutation({
+        onSuccess: () => {
+            window.location.href = "/dashboard";
+        },
+    });
+
     const tagAmounts: TagAmount[] = []
 
     expenses?.forEach(expense => {
@@ -184,6 +190,10 @@ export default function Expenses() {
                     </DialogFooter>
                 </DialogContent>
             </Dialog>
+
+            <Button variant="destructive" className="mt-4 w-fit" onClick={() => removeBudget.mutate( budgetId )}>
+                Delete Budget
+            </Button>
 
         </main>
     )
