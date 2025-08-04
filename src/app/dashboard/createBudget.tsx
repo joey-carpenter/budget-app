@@ -1,14 +1,14 @@
 "use client"
 
 import {
-  Dialog,
-  DialogClose,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
+    Dialog,
+    DialogClose,
+    DialogContent,
+    DialogDescription,
+    DialogFooter,
+    DialogHeader,
+    DialogTitle,
+    DialogTrigger,
 } from "~/components/ui/dialog"
 import { Input } from "~/components/ui/input"
 import { Label } from "~/components/ui/label"
@@ -17,12 +17,16 @@ import { useState } from "react"
 import { Plus } from "lucide-react"
 import { api } from "~/trpc/react"
 
-export default function CreateBudget() {
+export default function CreateBudget({ refetch }: { refetch?: () => void }) {
     const [name, setName] = useState("")
     const [totalAmount, setTotalAmount] = useState(0)
     const [description, setDescription] = useState("")
 
-    const createBudget = api.budget.createBudget.useMutation()
+    const createBudget = api.budget.createBudget.useMutation({
+        onMutate: () => {
+            refetch?.()
+        }
+    })
 
     return (
         <Dialog>
@@ -57,7 +61,9 @@ export default function CreateBudget() {
                     <DialogClose asChild>
                         <Button variant="outline">Cancel</Button>
                     </DialogClose>
-                    <Button type="submit" onClick={() => createBudget.mutate({ name, totalAmount, description })}>Save changes</Button>
+                    <DialogClose asChild>
+                        <Button type="submit" onClick={() => createBudget.mutate({ name, totalAmount, description })}>Save changes</Button>
+                    </DialogClose>
                 </DialogFooter>
             </DialogContent>
         </Dialog>

@@ -10,18 +10,20 @@ import {
 } from "~/components/ui/card"
 
 import { api } from "~/trpc/server";
-import { Ellipsis, TrendingUp } from "lucide-react";
 import CreateBudget from "./createBudget";
-import { Button } from "~/components/ui/button";
+import { revalidatePath } from "next/cache";
 
 export default async function Dashboard() {
     const budgets = await api.budget.getBudgets()
 
-    console.log(budgets)
+    async function refetch() {
+        "use server";
+        revalidatePath("/dashboard"); // adjust to your route
+    }
 
     return (
         <main className="flex items-center p-4 flex-col">
-            <CreateBudget />
+            <CreateBudget refetch={refetch} />
 
             <div className="p-4 flex flex-col items-start w-full">
                 <div className="text-3xl font-semibold w-full text-start">Managed Budgets</div>
@@ -48,7 +50,7 @@ export default async function Dashboard() {
                         description="Researching seashells on the seashore."
                     /> */}
 
-                    {budgets.map((budget) => (
+                    {budgets?.map((budget) => (
                         <Researcher
                             key={budget.id}
                             id={budget.id}
@@ -56,7 +58,7 @@ export default async function Dashboard() {
                             budget={budget.totalAmount}
                             description={budget.description ?? "Research budget details not provided."}
                         />
-                    ))}
+                    )) || "No budgets found."}
                 </div>
             </div>
         </main>

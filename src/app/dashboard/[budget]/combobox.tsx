@@ -28,6 +28,7 @@ export function ComboboxDemo({ month, setMonth, months }: { month: { month: numb
       <PopoverTrigger asChild>
         <Button
           variant="ghost"
+          // biome-ignore lint/a11y/useSemanticElements: <explanation>
           role="combobox"
           aria-expanded={open}
           className="w-fit justify-between font-semibold text-6xl p-10 font-mono"
@@ -39,7 +40,7 @@ export function ComboboxDemo({ month, setMonth, months }: { month: { month: numb
 
       <PopoverContent className="w-[200px] p-0">
         <Command>
-          <CommandInput placeholder="Search framework..." className="h-9" />
+          <CommandInput placeholder="Search month..." className="h-9" />
           <CommandList>
             <CommandEmpty>No month found.</CommandEmpty>
             <CommandGroup>
